@@ -1,1 +1,58 @@
-CREATE TABLE 
+CREATE TABLE IF NOT EXISTS user_role (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    role varchar(20) NOT NULL
+    );
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    role_id INT,
+    FOREIGN KEY (role_id)
+    	REFERENCES user_role(role_id)
+		ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    username varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    email varchar(320) NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    first_name varchar(255) NOT NULL,
+    last_name varchar(255) NOT NULL
+    );
+CREATE TABLE IF NOT EXISTS host_browser(
+	host_browser_id INT AUTO_INCREMENT PRIMARY KEY,
+    browser varchar(255)
+    );
+CREATE TABLE IF NOT EXISTS page(
+    page_id INT AUTO_INCREMENT PRIMARY KEY,
+    page varchar(255) NOT NULL,
+    link varchar(255) NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS visit (
+    visit_id INT AUTO_INCREMENT PRIMARY KEY,
+    host_browser_id INT NOT NULL,
+    FOREIGN KEY(host_browser_id)
+    	REFERENCES host_browser(host_browser_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    host_ip varchar(45) NOT NULL,
+    page_id INT,
+    FOREIGN KEY(page_id)
+    	REFERENCES page(page_id)
+    	ON UPDATE CASCADE
+    	ON DELETE SET NULL
+    /* Do we need to save a visit to a page no longer existing? Should we CASCADE(Deleting all visits to that page) instead? 
+    Or should we on delete just remove the link from page but keeping it in the database? Then just RESTRICT?
+    !If we change from set null, add NOT NULL to page_id!*/
+    );
+CREATE TABLE IF NOT EXISTS user_visit (
+	user_id INT,
+    visit_id INT,
+    FOREIGN KEY(user_id)
+    	REFERENCES users(user_id)
+    	ON UPDATE CASCADE
+    	ON DELETE CASCADE,
+    FOREIGN KEY(visit_id)
+    	REFERENCES visit(visit_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    PRIMARY KEY(user_id, visit_id)
+	);
