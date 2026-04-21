@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <title>Stats for *</title>
+  <script
+  src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0">
+  </script>
+
+</head>
+<body>
+  <?php
+    include ("template.php");
+    $incidents = array();
+	$dates = array();
+    $query =
+    	"SELECT DATE(incident_time)-0, COUNT(DATE(incident_time))
+      	FROM incident
+      	WHERE (DATE(incident_time) > CURRENT_DATE-5)
+      	GROUP BY incident_time";
+	if($result = $mysqli -> query($query))
+    {
+    	while($row = $result -> fetch_row())
+        {
+        	$dates[] = $row[0];
+    		$incidents[] = $row[1];
+        }
+    }
+	$test = ($mysqli -> query("SELECT CURRENT_DATE-15")) -> fetch_row();
+	$tabs = <<<END
+    	<div class="chart">
+    		<div class="tabs">
+      			<button onclick="getPlot()" class="visitTab">
+        			<h1>Plot</h1>	
+      			</button>
+      			<button class="visitTab" onclick="getTable()">
+        			<h1>Table</h1>
+      			</button>
+    		</div>
+    END;
+	$table = <<<END
+    	<div class="data">
+        	<table class="visitTable" border = "1" id = "table">
+            	<tr>
+        			<th></th>
+        			<th>Saturday</th>
+        			<th>Sunday</th>
+        			<th>Monday</th>
+        			<th>Tuesday</th>
+        			<th>Wednesday</th>
+      			</tr>
+              	<tr>
+        			<th>Nr of Incidents</th>
+        			<td>$incidents[0]</td>
+        			<td></td>
+        			<td></td>
+        			<td></td>
+        			<td></td>
+      			</tr>
+            </table>
+        </div>
+    END;
+	echo $tabs;
+	echo $table;
+  ?>
+  <!--
+  	<div class="chart">
+      <div class="tabs">
+      <button onclick="getPlot()" class="visitTab">
+        <h1>Plot</h1>
+      </button>
+      <button class="visitTab" onclick="getTable()">
+        <h1>Table</h1>
+      </button>
+    </div>
+    <div class="data">
+      <canvas id="visitPlot" class="visitPlot"></canvas>
+    </div>
+      <div class="data">
+      <table class="visitTable" border = "1" id = "table">
+      <tr>
+        <th></th>
+        <th>Saturday</th>
+        <th>Sunday</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+      </tr>
+      <tr>
+        <th>Login Page</th>
+        <td>10</td>
+        <td>15</td>
+        <td>30</td>
+        <td>5</td>
+        <td>25</td>
+      </tr>
+      <tr>
+        <th>Front Page</th>
+        <td>15</td>
+        <td>15</td>
+        <td>40</td>
+        <td>0</td>
+        <td>10</td>
+      </tr>
+    </table>
+    </div>
+<script>
+    function getTable()
+    {
+        document.getElementById("table").style.visibility = "visible"
+        document.getElementById("visitPlot").style.visibility = "hidden"
+    }
+    function getPlot()
+    {
+        document.getElementById("table").style.visibility = "hidden"
+        document.getElementById("visitPlot").style.visibility = "visible"
+    }
+      const xValues = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
+      const loginY = [10, 15, 30, 5, 25];
+      const frontY = [15, 15, 40, 0, 10];
+
+    const ctx = document.getElementById('visitPlot');
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [{
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "#FFFFFF",
+          borderColor: "#000000",
+          data: loginY,
+          yAxisID: "yAxis",
+          label: "Login Page"
+        }, {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "#AAFFFF",
+          borderColor: "#990000",
+          data: frontY,
+          yAxisID: "yAxis",
+          label: "Front Page"
+        }]
+      },
+      options: {
+        scales: {
+          yAxis:{
+            suggestedMin: 0,
+            suggestedMax: 50
+          },
+        },
+        plugins: {
+          legend: {display:true},
+          title: {
+            display: true,
+            text: "Visits the last couple of days",
+            font: {size:12}
+          }
+        }
+      }
+    });
+    </script>
+  </div>
+    -->
+</body>

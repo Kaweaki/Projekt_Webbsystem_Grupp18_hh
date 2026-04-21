@@ -56,3 +56,56 @@ CREATE TABLE IF NOT EXISTS user_visit (
     	ON DELETE RESTRICT,
     PRIMARY KEY(user_id, visit_id)
 	);
+CREATE TABLE IF NOT EXISTS severity(
+    severity_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30)
+);
+CREATE TABLE IF NOT EXISTS incident_type(
+  	incident_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(30),
+    description VARCHAR(150)
+);
+CREATE TABLE IF NOT EXISTS incident(
+   	incident_id INT PRIMARY KEY AUTO_INCREMENT,
+    incident_type_id INT,
+    FOREIGN KEY (incident_type_id)
+    	REFERENCES incident_type(incident_type_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    description TEXT,
+    severity_id INT PRIMARY KEY AUTO_INCREMENT,
+    incident_time TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS incident_status(
+    incident_status_id INT PRIMARY KEY AUTO_INCREMENT,
+    incident_id INT,
+    FOREIGN KEY(incident_id)
+    	REFERENCES incident(incident_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    user_id INT,
+    FOREIGN KEY(user_id)
+    	REFERENCES users(user_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    status varchar(30),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE evidence(
+	evidence_id INT PRIMARY KEY AUTO_INCREMENT,
+    incident_status_id INT,
+    FOREIGN KEY(incident_status_id)
+    	REFERENCES incident_status(incident_status_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    path varchar(150)
+);
+CREATE TABLE comment(
+    incident_status_id INT PRIMARY KEY,
+    FOREIGN KEY(incident_status_id)
+    	REFERENCES incident_status(incident_status_id)
+    	ON UPDATE CASCADE
+    	ON DELETE RESTRICT,
+    comment TEXT
+);
+    
